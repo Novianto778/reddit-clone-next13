@@ -3,9 +3,7 @@ import '@fontsource/open-sans/400.css';
 import '@fontsource/open-sans/700.css';
 import { extendTheme } from '@chakra-ui/react';
 // `@chakra-ui/theme` is a part of the base install with `@chakra-ui/react`
-import chakraTheme from '@chakra-ui/theme';
-
-const { Button } = chakraTheme.components;
+import { Button } from './button';
 
 export const theme = extendTheme({
     colors: {
@@ -23,5 +21,7 @@ export const theme = extendTheme({
             },
         }),
     },
-    
+    components: {
+        Button,
+    },
 });

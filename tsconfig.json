@@ -24,7 +24,8 @@
             "@/*": ["./*"],
             "@components/*": ["src/components/*"],
             "@pages/*": ["src/pages/*"],
-            "@chakra/*": ["src/chakra/*"]
+            "@chakra/*": ["src/chakra/*"],
+            "@atoms/*": ["src/atoms/*"]
         }
     },
     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
