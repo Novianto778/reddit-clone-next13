@@ -1,6 +1,5 @@
 import { authModalState } from '@atoms/authModalAtom';
 import { Button } from '@chakra-ui/react';
-import React from 'react';
 import { useSetRecoilState } from 'recoil';
 
 type Props = {};

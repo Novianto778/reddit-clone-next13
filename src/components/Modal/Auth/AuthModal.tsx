@@ -19,7 +19,6 @@ type Props = {};
 
 const AuthModal = (props: Props) => {
     const [modalState, setModalState] = useRecoilState(authModalState);
-    console.log(modalState);
 
     const handleClose = () => {
         setModalState((prev) => ({ ...prev, open: false }));

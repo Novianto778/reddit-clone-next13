@@ -1,7 +1,10 @@
+import { auth } from '@firebase/clientApp';
 import { authModalState } from '@atoms/authModalAtom';
 import { Input, Button, Flex, Text } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
+import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { FIREBASE_ERRORS } from '@/src/firebase/errors';
 
 type Props = {};
 
@@ -12,9 +15,25 @@ const SignUp = (props: Props) => {
         password: '',
         confirmPassword: '',
     });
+    const [formError, setFormError] = useState('');
+
+    const [createUserWithEmailAndPassword, user, loading, userError] =
+        useCreateUserWithEmailAndPassword(auth);
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setFormError('');
+        if (userError)
+            setFormError(
+                FIREBASE_ERRORS[
+                    userError.message as keyof typeof FIREBASE_ERRORS
+                ]
+            );
+        if (signupForm.password !== signupForm.confirmPassword) {
+            setFormError('passwords do not match');
+            return;
+        }
+        createUserWithEmailAndPassword(signupForm.email, signupForm.password);
     };
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,15 +111,20 @@ const SignUp = (props: Props) => {
                 }}
                 bg="gray.50"
             />
+            {formError && (
+                <Text textAlign="center" fontSize="10pt" color="red" mt={2}>
+                    {formError}
+                </Text>
+            )}
             <Button
                 width="100%"
                 height="36px"
                 mb={2}
                 mt={2}
                 type="submit"
-                // isLoading={loading}
+                isLoading={loading}
             >
-                Log In
+                Sign Up
             </Button>
             <Flex fontSize="9pt" justifyContent="center">
                 <Text mr={1}>Already a redditor?</Text>
