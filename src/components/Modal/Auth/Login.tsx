@@ -4,7 +4,7 @@ import { Input, Button, Flex, Text } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { useSetRecoilState } from 'recoil';
-import { FIREBASE_ERRORS } from '@/src/firebase/errors';
+import { FIREBASE_ERRORS } from '@firebase/errors';
 
 type Props = {};
 
@@ -92,6 +92,22 @@ const Login = (props: Props) => {
             >
                 Log In
             </Button>
+            <Flex fontSize="9pt" justifyContent="center">
+                <Text mr={1}>Forgot your password?</Text>
+                <Text
+                    color="blue.500"
+                    fontWeight={700}
+                    cursor="pointer"
+                    onClick={() =>
+                        setAuthModalState((prev) => ({
+                            ...prev,
+                            view: 'resetPassword',
+                        }))
+                    }
+                >
+                    Reset
+                </Text>
+            </Flex>
             <Flex fontSize="9pt" justifyContent="center">
                 <Text mr={1}>New here?</Text>
                 <Text

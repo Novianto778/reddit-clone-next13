@@ -1,28 +1,38 @@
+'use client';
+import { auth } from '@firebase/clientApp';
 import { authModalState } from '@atoms/authModalAtom';
 import {
-    Button,
     Flex,
     Modal,
     ModalBody,
     ModalCloseButton,
     ModalContent,
-    ModalFooter,
     ModalHeader,
     ModalOverlay,
-    useDisclosure,
+    Text,
 } from '@chakra-ui/react';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { useRecoilState } from 'recoil';
 import AuthInputs from './AuthInputs';
 import OAuthButtons from './OAuthButtons';
+import { useEffect } from 'react';
+import ResetPassword from './ResetPassword';
 
 type Props = {};
 
 const AuthModal = (props: Props) => {
     const [modalState, setModalState] = useRecoilState(authModalState);
+    const [user] = useAuthState(auth);
 
     const handleClose = () => {
         setModalState((prev) => ({ ...prev, open: false }));
     };
+
+    useEffect(() => {
+        if (user) handleClose();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
+
     return (
         <>
             <Modal isOpen={modalState.open} onClose={handleClose}>
@@ -48,9 +58,18 @@ const AuthModal = (props: Props) => {
                             justifyContent="center"
                             width="70%"
                         >
-                            <OAuthButtons />
-                            <AuthInputs />
-                            {/* <ResetPassword /> */}
+                            {modalState.view === 'login' ||
+                            modalState.view === 'signup' ? (
+                                <>
+                                    <OAuthButtons />
+                                    <Text color="gray.500" fontWeight={700}>
+                                        OR
+                                    </Text>
+                                    <AuthInputs />
+                                </>
+                            ) : (
+                                <ResetPassword />
+                            )}
                         </Flex>
                     </ModalBody>
                 </ModalContent>
