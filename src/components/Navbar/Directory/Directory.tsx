@@ -1,29 +1,24 @@
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import {
-    Menu,
-    MenuButton,
     Flex,
     Icon,
+    Menu,
+    MenuButton,
     MenuList,
-    Box,
-    Image,
     Text,
+    Image,
 } from '@chakra-ui/react';
-import { useState } from 'react';
-import { TiHome } from 'react-icons/ti';
+import useDirectory from '@hooks/useDirectory';
 import Communities from './Communities';
 
 type Props = {};
 
 const Directory = (props: Props) => {
-    const [open, setOpen] = useState(false);
-    const handleClose = () => setOpen(false);
-
-    // const { directoryState, toggleMenuOpen } = useDirectory();
+    const { directoryState, toggleMenuOpen } = useDirectory();
 
     return (
         <>
-            <Menu>
+            <Menu isOpen={directoryState.isOpen}>
                 <MenuButton
                     cursor="pointer"
                     padding="0px 6px"
@@ -34,6 +29,7 @@ const Directory = (props: Props) => {
                     }}
                     mr={2}
                     ml={{ base: 0, md: 2 }}
+                    onClick={toggleMenuOpen}
                 >
                     <Flex
                         alignItems="center"
@@ -41,13 +37,30 @@ const Directory = (props: Props) => {
                         width={{ base: 'auto', lg: '200px' }}
                     >
                         <Flex align="center">
-                            <Icon
-                                fontSize={24}
-                                mr={{ base: 1, md: 2 }}
-                                as={TiHome}
-                            />
+                            {directoryState.selectedMenuItem.imageURL ? (
+                                <Image
+                                    src={
+                                        directoryState.selectedMenuItem.imageURL
+                                    }
+                                    borderRadius="full"
+                                    boxSize="24px"
+                                    mr={2}
+                                    alt="Profile Picture"
+                                />
+                            ) : (
+                                <Icon
+                                    fontSize={24}
+                                    mr={{ base: 1, md: 2 }}
+                                    as={directoryState.selectedMenuItem.icon}
+                                />
+                            )}
                             <Flex display={{ base: 'none', lg: 'flex' }}>
-                                <Text>Home</Text>
+                                <Text>
+                                    {
+                                        directoryState.selectedMenuItem
+                                            .displayText
+                                    }
+                                </Text>
                             </Flex>
                         </Flex>
                         <ChevronDownIcon color="gray.500" />

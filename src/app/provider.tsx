@@ -1,7 +1,7 @@
 'use client';
 import { ChakraProvider } from '@chakra-ui/react';
 import { theme } from '@chakra/theme';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { RecoilRoot } from 'recoil';
 
 type Props = {
@@ -10,11 +10,6 @@ type Props = {
 
 const Providers = ({ children }: Props) => {
     const [showing, setShowing] = useState(false);
-
-    useEffect(() => {
-        setShowing(true);
-    }, []);
-
     if (!showing) {
         return null;
     }

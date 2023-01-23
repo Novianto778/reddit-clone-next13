@@ -19,6 +19,7 @@ import { IoDocumentText, IoImageOutline } from 'react-icons/io5';
 import ImageUpload from './PostForm/ImageUpload';
 import TabItem from './TabItem';
 import TextInputs from './PostForm/TextInputs';
+import useSelectFile from '@hooks/useSelectFile';
 
 type Props = {
     user: User;
@@ -67,7 +68,7 @@ const NewPostForm = ({ user, communityId }: Props) => {
         body: '',
     });
 
-    const [selectedFile, setSelectedFile] = useState<string>('');
+    const { selectedFile, setSelectedFile, onSelectFile } = useSelectFile();
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<boolean>(false);
 
@@ -114,18 +115,6 @@ const NewPostForm = ({ user, communityId }: Props) => {
         router.back();
     };
 
-    const onSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const reader = new FileReader();
-        if (e.target.files?.[0]) {
-            reader.readAsDataURL(e.target.files[0]);
-        }
-        reader.onload = (readerEvent) => {
-            if (readerEvent.target?.result) {
-                setSelectedFile(readerEvent.target.result as string);
-            }
-        };
-    };
-
     const onTextChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
@@ -157,7 +146,7 @@ const NewPostForm = ({ user, communityId }: Props) => {
                 {selectedTab === 'Images & Video' && (
                     <ImageUpload
                         selectedFile={selectedFile}
-                        onSelectImage={onSelectImage}
+                        onSelectImage={onSelectFile}
                         setSelectedFile={setSelectedFile}
                         setSelectedTab={setSelectedTab}
                     />

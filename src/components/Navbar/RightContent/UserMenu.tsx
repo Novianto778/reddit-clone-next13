@@ -30,7 +30,7 @@ const UserMenu = ({ user }: Props) => {
     const setModalState = useSetRecoilState(authModalState);
     const logout = () => {
         signOut(auth);
-        resetCommunityState();
+        // resetCommunityState();
     };
     return (
         <Menu>

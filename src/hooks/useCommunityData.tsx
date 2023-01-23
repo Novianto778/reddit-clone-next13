@@ -10,13 +10,18 @@ import { auth, firestore } from '@firebase/clientApp';
 import {
     collection,
     doc,
+    getDoc,
     getDocs,
     increment,
     writeBatch,
 } from 'firebase/firestore';
 import { authModalState } from '../atoms/authModalAtom';
 
-const useCommunityData = () => {
+type Props = {
+    [key: string]: string;
+};
+
+const useCommunityData = (params: Props) => {
     const [user] = useAuthState(auth);
     const [communityStateValue, setCommunityStateValue] =
         useRecoilState(communityState);
@@ -74,6 +79,7 @@ const useCommunityData = () => {
             const newSnippet: CommunitySnippet = {
                 communityId: communityData.id,
                 imageURL: communityData.imageURL || '',
+                isModerator: user?.uid === communityData.creatorId,
             };
             batch.set(
                 doc(
@@ -131,10 +137,41 @@ const useCommunityData = () => {
         }
     };
 
-    useEffect(() => {
-        if (user) {
-            getMySnippets();
+    const getCommunityData = async (communityId: string) => {
+        try {
+            const communityRef = doc(firestore, 'communities', communityId);
+            const communityDoc = await getDoc(communityRef);
+            if (communityDoc.exists()) {
+                const communityData = {
+                    id: communityDoc.id,
+                    ...communityDoc.data(),
+                };
+                setCommunityStateValue((prevState) => ({
+                    ...prevState,
+                    currentCommunity: communityData as Community,
+                }));
+            }
+        } catch (error: any) {
+            console.log('Error fetching community data', error);
         }
+    };
+
+    useEffect(() => {
+        if (params?.communityId && !communityStateValue.currentCommunity.id) {
+            getCommunityData(params.communityId);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [params?.communityId, communityStateValue.currentCommunity]);
+
+    useEffect(() => {
+        if (!user) {
+            setCommunityStateValue((prevState) => ({
+                ...prevState,
+                mySnippets: [],
+            }));
+            return;
+        }
+        getMySnippets();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 

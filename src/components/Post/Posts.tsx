@@ -51,6 +51,7 @@ const Posts = ({ communityData }: Props) => {
 
     useEffect(() => {
         getPosts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     return (
         <>
@@ -67,7 +68,11 @@ const Posts = ({ communityData }: Props) => {
                                 onDeletePost={onDeletePost}
                                 onSelectPost={onSelectPost}
                                 onVote={onVote}
-                                userVoteValue={undefined}
+                                userVoteValue={
+                                    postStateValue.postVotes.find(
+                                        (vote) => vote.postId === post.id
+                                    )?.voteValue
+                                }
                             />
                         );
                     })}

@@ -1,15 +1,18 @@
 import { Post } from '@atoms/postsAtom';
 import {
+    Alert,
+    AlertIcon,
     Flex,
     Icon,
     Image,
     Skeleton,
     Spinner,
     Stack,
-    Text
+    Text,
 } from '@chakra-ui/react';
 import moment from 'moment';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { BsChat, BsDot } from 'react-icons/bs';
@@ -20,16 +23,21 @@ import {
     IoArrowRedoOutline,
     IoArrowUpCircleOutline,
     IoArrowUpCircleSharp,
-    IoBookmarkOutline
+    IoBookmarkOutline,
 } from 'react-icons/io5';
 
 type Props = {
     post: Post;
     userIsCreator: boolean;
     userVoteValue?: number;
-    onVote: () => void;
-    onDeletePost: () => void;
-    onSelectPost: () => void;
+    onVote: (
+        e: React.MouseEvent,
+        post: Post,
+        voteValue: number,
+        communityId: string
+    ) => void;
+    onDeletePost: (post: Post) => Promise<boolean>;
+    onSelectPost?: (post: Post) => void;
 };
 
 const PostItem = ({
@@ -40,17 +48,40 @@ const PostItem = ({
     onDeletePost,
     onSelectPost,
 }: Props) => {
-    const [loadingImage, setLoadingImage] = useState(false);
+    const [loadingImage, setLoadingImage] = useState(true);
     const [loadingDelete, setLoadingDelete] = useState(false);
+    const [error, setError] = useState('');
+    const singlePostPage = !onSelectPost;
+    const router = useRouter();
+
+    const handleDelete = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        try {
+            setLoadingDelete(true);
+            const success = await onDeletePost(post);
+
+            if (!success) {
+                throw new Error('Error deleting post');
+            }
+            console.log('Post successfully deleted!');
+            if (singlePostPage) {
+                router.push(`/r/${post.communityId}`);
+            }
+        } catch (error: any) {
+            console.log('handleDelete postitem error: ', error);
+            setError(error.message);
+        }
+        setLoadingDelete(false);
+    };
     return (
         <Flex
             border="1px solid"
             bg="white"
-            borderColor={'gray.300'}
-            borderRadius={4}
-            cursor={'pointer'}
-            _hover={{ borderColor: 'gray.500' }}
-            // onClick={() => onSelectPost && post && onSelectPost(post, postIdx!)}
+            borderColor={singlePostPage ? 'white' : 'gray.300'}
+            borderRadius={singlePostPage ? '4px 4xp 0px 0px' : '4px'}
+            cursor={singlePostPage ? 'unset' : 'pointer'}
+            _hover={{ borderColor: singlePostPage ? 'none' : 'gray.500' }}
+            onClick={() => onSelectPost && onSelectPost(post)}
         >
             <Flex
                 direction="column"
@@ -58,7 +89,7 @@ const PostItem = ({
                 bg={'gray.100'}
                 p={2}
                 width="40px"
-                borderRadius={'3px 0px 0px 3px'}
+                borderRadius={singlePostPage ? '0' : '3px 0px 0px 3px'}
             >
                 <Icon
                     as={
@@ -69,9 +100,7 @@ const PostItem = ({
                     color={userVoteValue === 1 ? 'brand.100' : 'gray.400'}
                     fontSize={22}
                     cursor="pointer"
-                    // onClick={(event) =>
-                    //     onVote(event, post, 1, post.communityId)
-                    // }
+                    onClick={(e) => onVote(e, post, 1, post.communityId)}
                 />
                 <Text fontSize="9pt" fontWeight={600}>
                     {post.voteStatus}
@@ -85,10 +114,16 @@ const PostItem = ({
                     color={userVoteValue === -1 ? '#4379FF' : 'gray.400'}
                     fontSize={22}
                     cursor="pointer"
-                    // onClick={(event) => onVote(event, post, -1, post.communityId)}
+                    onClick={(e) => onVote(e, post, -1, post.communityId)}
                 />
             </Flex>
             <Flex direction="column" width="100%">
+                {error && (
+                    <Alert status="error">
+                        <AlertIcon />
+                        <Text mr={2}>Error creating post</Text>
+                    </Alert>
+                )}
                 <Stack spacing={1} p="10px 10px">
                     {post.createdAt && (
                         <Stack
@@ -204,7 +239,7 @@ const PostItem = ({
                             borderRadius={4}
                             _hover={{ bg: 'gray.200' }}
                             cursor="pointer"
-                            // onClick={handleDelete}
+                            onClick={handleDelete}
                         >
                             {loadingDelete ? (
                                 <Spinner size="sm" />

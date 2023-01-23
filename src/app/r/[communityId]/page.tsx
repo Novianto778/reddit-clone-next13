@@ -1,11 +1,13 @@
-import CreatePostLink from '@components/Community/CreatePostLink';
-import PageContent from '@components/Layout/PageContent';
 import { Community } from '@atoms/communitiesAtom';
+import About from '@components/Community/About';
+import CommunityPageWrapper from '@components/Community/CommunityPageWrapper';
+import CreatePostLink from '@components/Community/CreatePostLink';
 import Header from '@components/Community/Header';
+import PageContent from '@components/Layout/PageContent';
+import Posts from '@components/Post/Posts';
 import { firestore } from '@firebase/clientApp';
 import { doc, getDoc } from 'firebase/firestore';
 import { notFound } from 'next/navigation';
-import Posts from '@components/Post/Posts';
 
 type Props = {
     params: {
@@ -24,29 +26,24 @@ const getCommunityData = async (communityId: string) => {
     }
 };
 
-const CommunityPage = async ({ params }: Props) => {
-    const { communityId } = params;
-
+const CommunityPage = async ({ params: { communityId } }: Props) => {
     const communityData = await getCommunityData(communityId);
+    const serializedCommunityData = JSON.parse(JSON.stringify(communityData));
     if (!communityData) return notFound();
 
     return (
-        <>
-            <Header communityData={JSON.parse(JSON.stringify(communityData))} />
+        <CommunityPageWrapper communityData={serializedCommunityData}>
+            <Header communityData={serializedCommunityData} />
             <PageContent>
                 <>
-                    <CreatePostLink params={params} />
-                    <Posts
-                        communityData={JSON.parse(
-                            JSON.stringify(communityData)
-                        )}
-                    />
+                    <CreatePostLink communityId={communityId} />
+                    <Posts communityData={serializedCommunityData} />
                 </>
                 <>
-                    <div>Right</div>
+                    <About communityData={serializedCommunityData} />
                 </>
             </PageContent>
-        </>
+        </CommunityPageWrapper>
     );
 };
 

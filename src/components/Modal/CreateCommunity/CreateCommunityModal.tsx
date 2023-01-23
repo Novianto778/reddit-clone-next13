@@ -34,7 +34,8 @@ type Props = {
     handleClose: () => void;
 };
 
-const CreateCommunityModal = ({ open, handleClose }: Props) => {
+const 
+CreateCommunityModal = ({ open, handleClose }: Props) => {
     const [user] = useAuthState(auth);
     const [communityName, setCommunityName] = useState('');
     const [charsRemaining, setCharsRemaining] = useState(21);

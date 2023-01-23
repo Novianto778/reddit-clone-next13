@@ -5,22 +5,22 @@ import { BsLink45Deg } from 'react-icons/bs';
 import { FaReddit } from 'react-icons/fa';
 import { IoImageOutline } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
+import useDirectory from '@hooks/useDirectory';
 
 type Props = {
-    params: {
-        communityId?: string;
-    };
+    communityId?: string;
 };
 
-const CreatePostLink = ({ params }: Props) => {
+const CreatePostLink = ({ communityId }: Props) => {
+    const { toggleMenuOpen } = useDirectory();
     const router = useRouter();
     const onClick = () => {
         // Could check for user to open auth modal before redirecting to submit
-        const { communityId } = params;
         if (communityId) {
             router.push(`/r/${communityId}/submit`);
             return;
         }
+        toggleMenuOpen();
     };
     return (
         <Flex
