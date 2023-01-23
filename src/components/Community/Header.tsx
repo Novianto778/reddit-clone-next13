@@ -10,7 +10,7 @@ type Props = {
 
 const Header = ({ communityData }: Props) => {
     const { communityStateValue, onJoinOrLeaveCommunity, loading } =
-        useCommunityData();
+        useCommunityData({ communityId: communityData.id });
     const isJoined = !!communityStateValue.mySnippets.find(
         (community) => community.communityId === communityData.id
     );
